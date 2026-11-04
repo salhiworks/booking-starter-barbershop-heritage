@@ -1,0 +1,254 @@
+/*
+ * Northline Barbers — design tokens.
+ *
+ * The ONLY place with raw colour, font, size, spacing, radius, border, shadow
+ * and motion values. Every other stylesheet uses these custom properties.
+ * (CSS cannot read custom properties inside @media, so the breakpoints —
+ * 720px and 1080px, plus 400px for very small phones — are written out there;
+ * see DESIGN.md.)
+ *
+ * --green and --oxblood are overwritten at run time by the owner's brand
+ * colours (Website → Brand); everything derived from them follows.
+ */
+:root {
+  /* ── Colour · paper and ink ─────────────────────────────── */
+  --paper: #f3ede1;
+  --paper-deep: #e8dfcc;
+  --card: #fbf8f2;
+  --ink: #1b1d19;
+  --ink-muted: #55524a;
+  --rule: #cdbfa6;
+  --rule-strong: #a99a7f;
+  --field-border: #857760; /* 4.1:1 on card, 3.8:1 on paper (non-text UI ≥ 3:1) */
+
+  /* ── Colour · brand (owner-editable: --green, --oxblood) ─── */
+  --green: #163b2c;
+  --oxblood: #6b1e23;
+  --brass: #a8823f; /* rules and ornaments only — never text on paper */
+  --brass-text: #7d5c22;
+  --brass-light: #d2b274;
+
+  /* derived from the brand colours */
+  --green-deep: color-mix(in srgb, var(--green) 72%, var(--ink));
+  --green-wash: color-mix(in srgb, var(--green) 8%, var(--card));
+  --oxblood-deep: color-mix(in srgb, var(--oxblood) 78%, var(--ink));
+  --oxblood-wash: color-mix(in srgb, var(--oxblood) 7%, var(--card));
+  --brass-wash: color-mix(in srgb, var(--brass) 16%, var(--card));
+
+  /* text on the green board (and the oxblood band, see .words) */
+  --board-text: #f3ede1;
+  --board-muted: color-mix(in srgb, var(--board-text) 80%, var(--green));
+  --board-rule: color-mix(in srgb, var(--board-text) 22%, var(--green));
+  --board-accent: var(--brass-light); /* switched to --board-text when an owner's green is too light for brass */
+
+  /* status */
+  --error: #9e2a22;
+  --error-wash: #f7e4df;
+  --success: #1f5a3e;
+  --open: #2f7a50;
+  --open-halo: color-mix(in srgb, var(--open) 22%, transparent);
+
+  /* the painted window at dusk */
+  --glass: color-mix(in srgb, var(--green) 62%, var(--ink));
+  --glow-deep: #2c3b22;
+  --glow-warm: #7d5223;
+  --glow-hot: #d89a4c;
+  --gilt: #d9bb7c;
+  --gilt-hi: #f3e2b4;
+  --gilt-lo: #a87d3a;
+  --sheen: rgb(255 255 255 / 0.06);
+
+  /* shadows */
+  --shadow-ink: rgb(27 29 25 / 0.14);
+  --shadow-deep: rgb(27 29 25 / 0.22);
+  --shadow-bar: 0 -1px 0 var(--rule), 0 -12px 32px var(--shadow-ink);
+  --shadow-pop: 0 24px 60px var(--shadow-deep);
+  --shadow-lift: 0 10px 24px var(--shadow-ink);
+  --letter-shadow: drop-shadow(0 1px 0 rgb(0 0 0 / 0.45));
+
+  /* paper grain: one tiny tile of fractal noise, very faint */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+
+  /* ── Type ───────────────────────────────────────────────── */
+  --font-text: 'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --font-slab: 'Besley Variable', Rockwell, 'Roboto Slab', Georgia, serif;
+  --font-serif: 'DM Serif Display', 'Bodoni 72', Didot, Georgia, serif;
+  --font-display: var(--font-slab);
+
+  --display-weight: 780;
+  --title-weight: 700;
+  --item-weight: 620;
+  --quote-weight: 500;
+  --w-regular: 400;
+  --w-medium: 520;
+  --w-semibold: 620;
+  --w-bold: 720;
+
+  --text-2xs: 0.71875rem; /* 11.5px — day marks */
+  --text-xs: 0.78125rem; /* 12.5px — small caps labels */
+  --text-sm-tight: 0.875rem; /* 14px — segmented control on phones */
+  --text-sm: 0.9375rem; /* 15px */
+  --text-base: 1.0625rem; /* 17px */
+  --text-input: 1.0625rem; /* ≥ 16px: no zoom on iOS */
+  --text-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.3125rem); /* 18 → 21 */
+  --text-xl: clamp(1.3125rem, 1.15rem + 0.7vw, 1.6875rem); /* 21 → 27 */
+  --text-xl-plus: clamp(1.625rem, 1.35rem + 1.2vw, 2.25rem); /* 26 → 36 */
+  --text-2xl: clamp(2.125rem, 1.6rem + 2.4vw, 3.375rem); /* 34 → 54 */
+  --text-3xl: clamp(2.75rem, 1.4rem + 5vw, 6.5rem); /* 44 → 104 */
+  --text-numeral: clamp(2.75rem, 2rem + 3vw, 4.5rem); /* 44 → 72 */
+  --text-quote: clamp(1.375rem, 1.15rem + 1vw, 1.875rem); /* 22 → 30 */
+  --text-code: clamp(1.75rem, 1.45rem + 1.4vw, 2.25rem); /* 28 → 36 */
+  --text-sign: clamp(2.5rem, 1.9rem + 2.8vw, 4rem); /* 40 → 64 */
+  --text-wordmark: clamp(1.1875rem, 1.05rem + 0.6vw, 1.4375rem); /* 19 → 23 */
+
+  --lh-display: 0.96;
+  --lh-title: 1.04;
+  --lh-snug: 1.28;
+  --lh-body: 1.55;
+  --lh-tight: 1;
+
+  --track-display: -0.022em;
+  --track-title: -0.012em;
+  --track-caps: 0.14em;
+  --track-button: 0.08em;
+  --track-wide: 0.36em;
+  --track-code: 0.38em;
+
+  /* ── Space ──────────────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+  --space-hairline: 2px;
+
+  --section-pad: clamp(64px, 9vw, 128px);
+  --gutter: clamp(20px, 5.2vw, 56px);
+  --max-w: 1320px;
+  --measure: 62ch;
+  --measure-lede: 46ch;
+  --measure-short: 34ch;
+  --form-w: 34rem;
+  --slip-w: 21.5rem;
+  --ticket-w: 30rem;
+  --sign-w: 30rem;
+  --no-col: 2.25rem;
+  --notes-col: 8.75rem;
+  --slip-col: 5.5rem;
+  --plate-min: 12rem;
+  --plate-max: 17.5rem;
+  --plate-peek: 62%;
+
+  /* ── Sizes ──────────────────────────────────────────────── */
+  --tap: 44px;
+  --tap-lg: 52px;
+  --tap-xl: 64px;
+  --header-h: 68px;
+  --day-h: 68px;
+  --code-h: 72px;
+  --icon: 16px;
+  --arrow-w: 20px;
+  --dot: 7px;
+  --mark-w: 10px;
+  --mark-h: 26px;
+  --sign-mark-w: 14px;
+  --sign-mark-h: 36px;
+  --logo-h: 40px;
+  --logo-max-w: 220px;
+  --skeleton-line: 1.1em;
+  --skeleton-title: 2rem;
+  --skeleton-line-w: 60%;
+  --skeleton-title-w: 45%;
+  --skeleton-chip-w: 16rem;
+  --wordmark-skeleton-w: 9em;
+  --wordmark-skeleton-h: 1em;
+  --spinner: 1em;
+  --spinner-small: 0.85em;
+  --error-badge: 1.25em;
+  --count-min-w: 1.75em;
+  --page-min-h: 100vh;
+  --hero-h: clamp(520px, 78vh, 860px);
+  --measure-headline: 11ch;
+  --detail-w: min(76%, 26rem);
+  --barber-photo-col: 38%;
+  --sign-rule-w: 40%;
+  --footer-cols: minmax(0, 2fr) minmax(0, 1.4fr) minmax(0, 1fr);
+
+  /* ── Photo frames (aspect ratios) ───────────────────────── */
+  --ratio-portrait: 4 / 5;
+  --ratio-room: 3 / 2;
+  --ratio-cinema: 21 / 9;
+  --ratio-band: 4 / 3;
+  --ratio-band-wide: 16 / 9;
+  --ratio-square: 1;
+
+  /* ── Borders and shape ──────────────────────────────────── */
+  --hair: 1px;
+  --bold: 2px;
+  --heavy: 4px;
+  --double: 5px;
+  --leader: 2px;
+  --mat: 10px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-pill: 999px;
+  --radius-round: 50%;
+  --underline-offset: 0.2em;
+  --underline-offset-strong: 0.25em;
+  --opacity-disabled: 0.6;
+  --opacity-faint: 0.4;
+  --arch: 999px 999px var(--radius-sm) var(--radius-sm) / 999px 999px var(--radius-sm) var(--radius-sm);
+  --frame-line: color-mix(in srgb, var(--ink) 75%, transparent);
+
+  /* ── Focus ──────────────────────────────────────────────── */
+  --focus-color: var(--oxblood);
+  --focus-width: 3px;
+  --focus-offset: 3px;
+
+  /* ── Motion ─────────────────────────────────────────────── */
+  --dur-none: 0ms;
+  --dur-instant: 0.01ms;
+  --dur-fast: 160ms;
+  --dur-base: 260ms;
+  --dur-slow: 520ms;
+  --dur-flash: 400ms;
+  --dur-shimmer: 1400ms;
+  --dur-spin: 800ms;
+  --stagger: 80ms;
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --rise: 14px;
+  --slide: 10px;
+  --nudge: 3px;
+
+  /* ── Layers ─────────────────────────────────────────────── */
+  --z-raised: 1;
+  --z-bar: 20;
+  --z-skip: 100;
+}
+
+/* The owner's heading style (Website → Brand → Heading style). */
+:root[data-headings='serif'] {
+  --font-display: var(--font-serif);
+  --display-weight: 400;
+  --title-weight: 400;
+  --item-weight: 400;
+  --quote-weight: 400;
+  --track-display: -0.01em;
+  --track-title: 0;
+}
+
+:root[data-headings='grotesk'] {
+  --font-display: var(--font-text);
+  --display-weight: 820;
+  --title-weight: 760;
+  --item-weight: 680;
+  --quote-weight: 500;
+  --track-display: -0.035em;
+  --track-title: -0.022em;
+}

@@ -1,0 +1,7 @@
+/*
+ * The dashboard is the engine's shared design: only its accent is ours.
+ * Northline's bottle green, deep in Light (white text), light and softer in
+ * Dark (near-black text). See DESIGN.md for the contrast checks.
+ */
+:root .pbe-admin[data-mode='light'] { --pbe-accent: #1e5a40; --pbe-accent-text: #ffffff; } /* 8.1:1 on white, 8.1:1 */
+:root .pbe-admin[data-mode='dark']  { --pbe-accent: #93cdb4; --pbe-accent-text: #0b1a14; } /* 9.8:1 on #18181b, 9.9:1 */
