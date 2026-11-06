@@ -13,7 +13,12 @@ export interface BookingIntent {
 export interface BookingIntentApi {
   intent: BookingIntent | null;
   startBooking: (serviceId?: string | null) => void;
+  /** False while online booking is known not to be possible: Book buttons then say how to book instead. */
+  online: boolean;
 }
+
+/** What a general Book button says: the owner's label, or "How to book" while booking is offline. */
+export const OFFLINE_CTA = 'How to book';
 
 export const BookingIntentContext = createContext<BookingIntentApi | null>(null);
 

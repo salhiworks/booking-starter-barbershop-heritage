@@ -1,10 +1,13 @@
-# Barbershop "Heritage" Starter — project rules
+# Barbershop "Cut List" Starter — project rules
+
+(The folder and repository keep the name `barbershop-heritage`, the first
+design's name, so published links stay valid.)
 
 A one-page booking website for a barbershop, shipped as **Northline Barbers** (a
 fictional shop in Brooklyn, NY) for the owner to make their own. Its identity
 lives in `src/site.config.ts`; `CUSTOMIZE.md` is the prompt that personalizes it.
 Built around the **Profit Studio Booking Engine** (`@profitstudio/booking-engine`
-**2.0.0-beta.2**, pinned; lock in `booking-engine.lock.json`). The engine owns the
+**2.0.0-beta.3**, pinned; lock in `booking-engine.lock.json`). The engine owns the
 booking system; this project owns the public website's design.
 
 Read before changing anything booking-related:
@@ -73,9 +76,16 @@ business: never offer per-barber booking or show staff availability.
   (media-query breakpoints are the one exception CSS forces).
 - `src/styles/base.css` (reset, type, buttons, frames, motion), `site.css`
   (sections), `booking.css` (the flow). Plain CSS, no UI kit.
-- `src/components/` — one component per section; `src/components/booking/` — the
-  flow (`BookingFlow.tsx` is the state machine; `TimeStep.tsx` + `Calendar.tsx`
-  build on the engine's calendar helpers).
+- `src/components/` — one component per section (`CutRow.tsx` is the shared
+  service row of the hero and the menu); `src/components/booking/` — the flow
+  (`BookingFlow.tsx` is the state machine; `TimeStep.tsx` + `Calendar.tsx`
+  build on the engine's calendar helpers: a 14-day strip from today, one
+  `getAvailability` call per month grid it touches).
+- Booking opens as a modal `<dialog>` at `#book` (`BookingSheet.tsx`,
+  `src/lib/dialog.ts`; history and Esc in `src/App.tsx`). While online booking
+  is off or not loadable, every Book button goes to the `#book` section
+  (`BookingSection.tsx`) and its contact details instead. Keep `#book-flow` on
+  the flow root and `#book` on the section: the workspace browser journeys use them.
 - `src/content/site.ts` — what the owner can edit (`defineSiteContent`); its
   defaults are the site's own copy. Imported by `vite.config.ts` too, so it may
   only import from the engine package. Every field must stay rendered.
@@ -89,8 +99,9 @@ business: never offer per-barber booking or show staff availability.
 
 ## Honesty rules for content
 
-- Barber profiles and "Kind words" defaults are labelled samples/placeholders
-  until the owner saves their own (`ownerFields`). Never present a photographed
+- Barber profiles are labelled samples until the owner saves their own
+  (`ownerFields`), and show no photo until the owner adds a portrait. "Kind
+  words" is not shown at all until the owner saves real quotes. Never present a photographed
   person as staff; never invent reviews, ratings, awards or "best in town" claims.
 - Words: "clients" and "appointments".
 - Tone: easygoing, sharp, plain-spoken, welcoming. No macho or "gentlemen's club"

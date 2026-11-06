@@ -32,7 +32,7 @@ function isSelectable(date: string, ctx: DayContext): boolean {
   return !day || day.status !== 'unavailable';
 }
 
-function describe(date: string, ctx: DayContext): { mark: string; spoken: string; tone: string } {
+function describe(date: string, ctx: DayContext, variant: 'strip' | 'month'): { mark: string; spoken: string; tone: string } {
   if (date < ctx.today) return { mark: '', spoken: 'past', tone: 'past' };
   if (date > ctx.lastDay) return { mark: '', spoken: 'not bookable yet', tone: 'past' };
   const day = findDay(ctx.days, date);
@@ -43,7 +43,8 @@ function describe(date: string, ctx: DayContext): { mark: string; spoken: string
         const n = day.slots.length;
         return { mark: `${n} left`, spoken: `${n} ${n === 1 ? 'time' : 'times'} left`, tone: 'few' };
       }
-      return { mark: '', spoken: 'open', tone: 'open' };
+      // The strip has room to say how many times are open; the month grid shows a dot.
+      return { mark: variant === 'strip' ? `${day.slots.length} open` : '', spoken: 'open', tone: 'open' };
     case 'full':
       return { mark: 'Full', spoken: 'fully booked', tone: 'full' };
     case 'closed':
@@ -72,7 +73,7 @@ function DayButton({
   onSelect: (date: string) => void;
   onFocusDate: (date: string) => void;
 }) {
-  const info = describe(date, ctx);
+  const info = describe(date, ctx, variant);
   const selectable = isSelectable(date, ctx);
   const isToday = date === ctx.today;
   const label = `${longDate(date, ctx.locale)}${isToday ? ', today' : ''}, ${info.spoken}`;
@@ -159,6 +160,16 @@ export function WeekStrip(props: StripProps) {
   const queueFocus = useFocusDay(listRef);
   const rovingDate = dates.includes(focusDate) && isSelectable(focusDate, ctx) ? focusDate : selected;
 
+  // The strip scrolls sideways on narrow screens: keep the chosen day in view.
+  const firstDate = dates[0];
+  useEffect(() => {
+    const list = listRef.current;
+    const button = list?.querySelector<HTMLElement>(`[data-date="${selected}"]`);
+    if (!list || !button) return;
+    const left = button.offsetLeft - (list.clientWidth - button.offsetWidth) / 2;
+    list.scrollTo({ left: Math.max(0, left), behavior: 'auto' });
+  }, [selected, firstDate]);
+
   const first = dates[0];
   const last = dates[dates.length - 1];
   const sameMonth = monthOf(first) === monthOf(last);
@@ -185,12 +196,12 @@ export function WeekStrip(props: StripProps) {
       <div className="strip__head">
         <p className="strip__month">{label}</p>
         <div className="strip__nav">
-          <button type="button" className="icon-btn" onClick={props.onPrevWeek} disabled={!props.canPrev} aria-label="Previous week">
+          <button type="button" className="icon-btn" onClick={props.onPrevWeek} disabled={!props.canPrev} aria-label="Previous two weeks">
             <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
               <path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" strokeWidth="1.8" />
             </svg>
           </button>
-          <button type="button" className="icon-btn" onClick={props.onNextWeek} disabled={!props.canNext} aria-label="Next week">
+          <button type="button" className="icon-btn" onClick={props.onNextWeek} disabled={!props.canNext} aria-label="Next two weeks">
             <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
               <path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" strokeWidth="1.8" />
             </svg>
@@ -200,7 +211,7 @@ export function WeekStrip(props: StripProps) {
           </button>
         </div>
       </div>
-      <ul className="strip__days" ref={listRef} onKeyDown={onKeyDown} aria-label="Days this week">
+      <ul className="strip__days" ref={listRef} onKeyDown={onKeyDown} aria-label="Days">
         {dates.map((date) => (
           <li key={date}>
             <DayButton

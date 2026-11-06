@@ -12,6 +12,7 @@ import {
 } from '@profitstudio/booking-engine';
 import { invalidateAvailability } from '../../lib/availability';
 import { useBookingIntent } from '../../lib/booking-intent';
+import { durationLabel, priceLabel } from '../../lib/format';
 import { useContent } from '../../lib/content';
 import { engine } from '../../lib/engine';
 import { revealAndFocus } from '../../lib/motion';
@@ -186,8 +187,15 @@ export function BookingFlow({ business, services, onServicesStale, onBusinessSta
   }, [intent, services, timezone]);
 
   // Focus moves to each new step's heading (never on the first render).
+  // In the booking sheet the step starts at the top (progress and all); elsewhere, scroll to it.
   useEffect(() => {
-    if (state.focusKey > 0) revealAndFocus(headingRef.current);
+    if (state.focusKey === 0) return;
+    const heading = headingRef.current;
+    const sheet = heading?.closest<HTMLElement>('.sheet__body');
+    if (sheet && heading) {
+      sheet.scrollTo({ top: 0 });
+      heading.focus({ preventScroll: true });
+    } else revealAndFocus(heading);
   }, [state.focusKey]);
 
   const onDay = useCallback((date: string) => dispatch({ type: 'day', date }), []);
@@ -419,81 +427,54 @@ export function BookingFlow({ business, services, onServicesStale, onBusinessSta
   }
 
   const showBar = (step === 'time' || step === 'details' || step === 'code') && service !== null;
-  const showSlip = step !== 'done';
   const onContinue = step === 'time' && state.slot ? () => dispatch({ type: 'goto', step: 'details' }) : undefined;
-  const onChangeService = step === 'time' || step === 'details' ? () => dispatch({ type: 'goto', step: 'service' }) : undefined;
   const pulseKey = `${state.serviceId ?? ''}|${state.slot?.startsAt ?? ''}`;
 
   return (
-    <div className={`flow-grid${showSlip ? '' : ' flow-grid--solo'}`}>
-      <div className="flow">
-        <ol className="progress" aria-label="Booking steps">
-          {STEPS.map((s, i) => {
-            const done = step === 'done' || (index >= 0 && i < index);
-            return (
-              <li
-                key={s.id}
-                className={`progress__item${s.id === step ? ' is-current' : ''}${done ? ' is-done' : ''}`}
-                aria-current={s.id === step ? 'step' : undefined}
-              >
-                <span className="progress__no" aria-hidden="true">
-                  {i + 1}
-                </span>
-                <span className="progress__name">{s.name}</span>
-              </li>
-            );
-          })}
-        </ol>
+    <div className={`flow flow--${step}`} id="book-flow">
+      <ol className="progress" aria-label="Booking steps">
+        {STEPS.map((s, i) => {
+          const done = step === 'done' || (index >= 0 && i < index);
+          return (
+            <li
+              key={s.id}
+              className={`progress__item${s.id === step ? ' is-current' : ''}${done ? ' is-done' : ''}`}
+              aria-current={s.id === step ? 'step' : undefined}
+            >
+              <span className="progress__name">{s.name}</span>
+            </li>
+          );
+        })}
+      </ol>
 
-        <div className={`flow__step flow__step--${step}`} key={step}>
-          <p className="flow__eyebrow">{step === 'done' ? (state.outcome?.kind === 'preview' ? 'Preview' : 'All set') : stepLabel}</p>
-          <h3 className="flow__title" ref={headingRef} tabIndex={-1}>
-            {title}
-          </h3>
-          {step === 'time' && service ? (
-            <p className="flow__context">
-              {service.name}
-              <button type="button" className="text-btn" onClick={() => dispatch({ type: 'goto', step: 'service' })}>
-                Change service
-              </button>
+      <div className={`flow__step flow__step--${step}`} key={step}>
+        <p className="flow__eyebrow">{step === 'done' ? (state.outcome?.kind === 'preview' ? 'Preview' : 'All set') : stepLabel}</p>
+        <h3 className="flow__title" ref={headingRef} tabIndex={-1} data-step-heading="">
+          {title}
+        </h3>
+        {(step === 'time' || step === 'details') && service ? (
+          <div className="chosen">
+            <p className="chosen__text">
+              <span className="chosen__name">{service.name}</span>
+              <span className="chosen__meta">
+                {durationLabel(service.durationMinutes)} · {priceLabel(service, locale)}
+              </span>
             </p>
-          ) : null}
-          {state.notice ? (
-            <p className={`notice notice--${state.notice.tone}`} role={state.notice.tone === 'alert' ? 'alert' : 'status'}>
-              {state.notice.text}
-            </p>
-          ) : null}
-          {content}
-        </div>
-
-        {showBar ? (
-          <Summary
-            variant="bar"
-            business={business}
-            service={service}
-            slot={state.slot}
-            today={today}
-            stepLabel={meta?.name ?? ''}
-            onContinue={onContinue}
-            pulseKey={pulseKey}
-          />
+            <button type="button" className="text-btn" onClick={() => dispatch({ type: 'goto', step: 'service' })}>
+              Change<span className="visually-hidden"> service</span>
+            </button>
+          </div>
         ) : null}
+        {state.notice ? (
+          <p className={`notice notice--${state.notice.tone}`} role={state.notice.tone === 'alert' ? 'alert' : 'status'}>
+            {state.notice.text}
+          </p>
+        ) : null}
+        {content}
       </div>
 
-      {showSlip ? (
-        <aside className="flow__aside" aria-label="Your appointment">
-          <Summary
-            variant="slip"
-            business={business}
-            service={service}
-            slot={state.slot}
-            today={today}
-            stepLabel={stepLabel}
-            onContinue={onContinue}
-            onChangeService={service ? onChangeService : undefined}
-            pulseKey={pulseKey}
-          />
-        </aside>
+      {showBar ? (
+        <Summary business={business} service={service} slot={state.slot} today={today} stepLabel={meta?.name ?? ''} onContinue={onContinue} pulseKey={pulseKey} />
       ) : null}
     </div>
   );

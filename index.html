@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-headings="slab">
+<html lang="en" data-headings="slab" data-photos="natural">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -8,17 +8,28 @@
       name="description"
       content="Cuts, fades, beard trims and hot-towel shaves in Brooklyn. See the menu and prices, check our hours and book a chair online in a minute or two."
     />
-    <meta name="theme-color" content="#163B2C" />
+    <meta name="theme-color" content="#121417" />
     <meta name="color-scheme" content="light" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- The hero's default photo: preloaded so the first screen paints with it. -->
+    <!-- The hero's default photo (its phone crop below 1000px): preloaded so the first screen paints with it. -->
     <link
       rel="preload"
       as="image"
       type="image/avif"
-      href="/photos/hero-fade-960.avif"
-      imagesrcset="/photos/hero-fade-640.avif 640w, /photos/hero-fade-960.avif 960w, /photos/hero-fade-1440.avif 1440w"
-      imagesizes="(min-width: 1080px) 42vw, 100vw"
+      href="/photos/hero-shop-tall-720.avif"
+      imagesrcset="/photos/hero-shop-tall-480.avif 480w, /photos/hero-shop-tall-720.avif 720w, /photos/hero-shop-tall-1000.avif 1000w"
+      imagesizes="100vw"
+      media="(max-width: 999px)"
+      fetchpriority="high"
+    />
+    <link
+      rel="preload"
+      as="image"
+      type="image/avif"
+      href="/photos/hero-shop-1080.avif"
+      imagesrcset="/photos/hero-shop-720.avif 720w, /photos/hero-shop-1080.avif 1080w, /photos/hero-shop-1420.avif 1420w"
+      imagesizes="46vw"
+      media="(min-width: 1000px)"
       fetchpriority="high"
     />
   </head>

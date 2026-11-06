@@ -1,19 +1,20 @@
-# Barbershop Booking Website — "Heritage" Starter
+# Barbershop Booking Website — "Cut List" Starter
 
 A finished, premium booking website for a barbershop, ready to make your own
 with Claude Code and publish on Hostinger. It ships as **Northline Barbers**,
 a fictional barbershop in Brooklyn, New York:
 
-- a one-page shop website (the menu board, the barbers, the shop, hours & directions with a painted window sign, reviews) that works from 320 px phones up;
+- a one-page shop website (the price list up front, the barbers, the shop, reviews, hours & directions) that works from 320 px phones up;
+- booking in a focused sheet over the page, opened by every Book button;
 - online booking — service, day and time, details and an emailed 6-digit code;
 - the owner dashboard at `/admin/` — appointments, requests to confirm,
   services and prices, opening hours and closures, email health, and the
   website's own text, photos, colours and heading style.
 
-The look: a numbered price board in bottle green and brass on warm paper, a sturdy Clarendon slab (Besley) with a crisp news grotesk, warm tungsten photographs.
+The look: a condensed Archivo headline and price list on porcelain white and ink, one deep-blue action colour, photographs of the shop at work. See `DESIGN.md`.
 
 Booking runs on [`@profitstudio/booking-engine`](https://www.npmjs.com/package/@profitstudio/booking-engine)
-**2.0.0-beta.2** (pinned) with your own Supabase project and Resend for email.
+**2.0.0-beta.3** (pinned) with your own Supabase project and Resend for email.
 
 ## 1. Try it (no accounts needed)
 

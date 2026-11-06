@@ -1,10 +1,9 @@
 import { useContent } from '../lib/content';
 import { useSiteData } from '../lib/site-data';
-import { NorthMark } from './NorthMark';
 
 /**
  * The owner's logo when they set one; otherwise the business name (from the
- * engine) set in the display face beside the north-line mark.
+ * engine) set as a condensed poster word.
  */
 export function Wordmark({ className = '' }: { className?: string }) {
   const { values } = useContent();
@@ -26,7 +25,6 @@ export function Wordmark({ className = '' }: { className?: string }) {
   }
   return (
     <span className={`wordmark ${className}`}>
-      <NorthMark className="wordmark__mark" />
       {name ? (
         <span className="wordmark__name">{name}</span>
       ) : (

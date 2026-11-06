@@ -317,7 +317,8 @@ export function CodeStep({ business, pending, onVerified, onPreview, onBackToTim
         </button>
       </div>
 
-      <p className="code__spam">Nothing yet? Give it a minute and check your spam or promotions folder.</p>
+      {/* No email exists in preview or the Live Demo: nothing to look for in spam. */}
+      {preview ? null : <p className="code__spam">Nothing yet? Give it a minute and check your spam or promotions folder.</p>}
     </form>
   );
 }

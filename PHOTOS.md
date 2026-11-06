@@ -1,6 +1,6 @@
 # Photographs
 
-Six licensed photographs, all from Pexels under the
+Three licensed photographs, all from Pexels under the
 [Pexels License](https://www.pexels.com/license/) (free to use and modify,
 attribution not required — credited here anyway). No image-generation tool was
 used. **This starter ships only the processed frames in `public/photos/`** — the
@@ -11,35 +11,34 @@ AVIF + WebP at three widths to `public/photos/`.
 
 | Served as (`public/photos/`) | Where | Source page | Photographer | Licence | Edits |
 |---|---|---|---|---|---|
-| `hero-fade-{640,960,1440}.{avif,webp}` | Hero (`hero.photo`) | https://www.pexels.com/photo/barber-perfecting-a-fade-haircut-close-up-39559270/ | Brian Silva | Pexels License | Cropped 4:5 on the fade line, ear and clipper; graded |
+| `hero-shop-{720,1080,1420}.{avif,webp}` (5:4) and `hero-shop-tall-{480,720,1000}.{avif,webp}` (4:5, phones) | Hero (`hero.photo`) | https://www.pexels.com/photo/a-barber-trimming-a-beard-7518739/ | Pavel Danilyuk | Pexels License | Two crops of the left of the room, excluding a barber pole; three small Levi's logo stickers on the window and in a mirror removed (filled from the surrounding glass); not graded |
 | `shop-chairs-{800,1280,1920}.{avif,webp}` | The shop (`shop.photo`) | https://www.pexels.com/photo/vintage-barber-shop-interior-with-classic-chairs-37764947/ | wal_ 172619 | Pexels License | Cropped 3:2 to remove the door frame, a striped cape and a painted sign; graded |
 | `shop-lather-{480,720,1080}.{avif,webp}` | The shop, detail (`shop.detail`) | https://www.pexels.com/photo/customer-at-barber-16553361/ | Aarón Lares | Pexels License | Cropped 4:5, removing a logo on the barber's shirt; graded |
-| `tools-clippers-{360,560,840}.{avif,webp}` | Sample barber card 1 (site fallback) | https://www.pexels.com/photo/tools-at-barbershop-7697712/ | RDNE Stock project | Pexels License | Cropped 4:5 on the clippers; graded |
-| `tools-scissors-{360,560,840}.{avif,webp}` | Sample barber card 2 (site fallback) | https://www.pexels.com/photo/hairdresser-scissors-and-tools-10317439/ | Ron Lach | Pexels License | Cropped 4:5; graded |
-| `tools-brass-{360,560,840}.{avif,webp}` | Sample barber card 3 (site fallback) | https://www.pexels.com/photo/gray-hand-tool-1319459/ | Nikolaos Dimou | Pexels License | Cropped 4:5 on the brass bowl and razors; graded |
 
 Masters (downloaded from images.pexels.com at 2400–3200 px; kept with the source project, not shipped in this starter):
-`pexels-39559270-brian-silva.jpg`, `pexels-37764947-wal.jpg`,
-`pexels-16553361-aaron-lares.jpg`, `pexels-7697712-rdne.jpg`,
-`pexels-10317439-ron-lach.jpg`, `pexels-1319459-nikolaos-dimou.jpg`.
+`pexels-7518739-pavel-danilyuk.jpg` (2400 px working copy), `pexels-37764947-wal.jpg`,
+`pexels-16553361-aaron-lares.jpg`.
 
 ## Rules these photos follow
 
 - **Nobody photographed is presented as Northline staff.** The sample barber
-  cards show tools, never a face, and carry a "Sample photo" label until the
-  owner adds a portrait to each barber (Website → The barbers). The two photos
-  with people show a client's head and hands at work; alt text describes them
-  as such, and nothing on the page says they are this shop's barbers or
-  clients.
+  profiles are words only — no stand-in portrait, no tools dressed up as a
+  person — and are labelled as samples until the owner adds the team with
+  their own portraits (Website → The barbers). The hero shows a barber and a
+  client at work in a shop; its alt text describes the scene, and nothing on the
+  page names them or says they work here.
 - **Service photos are not stock.** The menu shows only the photos the owner
-  adds per service in the dashboard (Services); with none, the menu board is
+  adds per service in the dashboard (Services); with none, the menu is
   complete on its own.
-- **The shopfront at dusk is painted, not photographed.** Every licensed
-  storefront I found showed another shop's name, a barber pole (a cliché the
-  brief rules out) or identifiable people. Rather than fake it, the "Hours &
-  directions" frame is a designed window sign (name and hours from the engine,
-  gilded lettering, tungsten glow). The owner can replace it with a photo of
-  the real shopfront: Website → Hours & directions → Shopfront photo.
+- **No shopfront photo by default.** Every licensed storefront I found showed
+  another shop's name, a barber pole (a cliché the brief rules out) or
+  identifiable people, so "Hours & directions" shows the address and the hours
+  only. The owner can add a photo of the real shopfront: Website → Hours &
+  directions → Shopfront photo.
+- **Every frame is shown in black and white** by one CSS filter
+  (`--photo-filter` in `src/styles/tokens.css`), the owner's uploads included,
+  so photos from different sources read as one set. The files themselves keep
+  their colour grade.
 - Owner uploads never pass through `scripts/photos.mjs`: the engine resizes
   them (WebP, longest side 2400 px) and the site renders them in the same
   fixed-ratio frames with `object-fit: cover`.

@@ -1,5 +1,5 @@
 import type { Business, Service } from '@profitstudio/booking-engine';
-import { durationLabel, menuNumber, priceLabel } from '../../lib/format';
+import { durationLabel, priceLabel } from '../../lib/format';
 
 interface ServiceStepProps {
   business: Business;
@@ -12,14 +12,11 @@ interface ServiceStepProps {
 export function ServiceStep({ business, services, selectedId, onChoose }: ServiceStepProps) {
   return (
     <ul className="choices">
-      {services.map((service, index) => {
+      {services.map((service) => {
         const chosen = service.id === selectedId;
         return (
           <li key={service.id}>
             <button type="button" className={`choice${chosen ? ' is-chosen' : ''}`} aria-pressed={chosen} onClick={() => onChoose(service.id)}>
-              <span className="choice__no" aria-hidden="true">
-                {menuNumber(index)}
-              </span>
               <span className="choice__main">
                 <span className="choice__name">{service.name}</span>
                 <span className="choice__meta">

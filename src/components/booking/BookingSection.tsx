@@ -1,41 +1,31 @@
 import type { EngineError } from '@profitstudio/booking-engine';
-import { useEffect, useRef } from 'react';
 import { useBookingIntent } from '../../lib/booking-intent';
 import { useContent } from '../../lib/content';
-import { revealAndFocus } from '../../lib/motion';
 import { useSiteData } from '../../lib/site-data';
+import { Arrow } from '../Arrow';
 import { SectionHead } from '../SectionHead';
-import { BookingFlow } from './BookingFlow';
 import { ContactCard } from './ContactCard';
 import { problemText } from './messages';
 
+/**
+ * #book on the page: how booking works and the button that opens the booking
+ * sheet — or, while online booking is not possible, why, with the shop's
+ * contact details. Every Book button lands here in that case.
+ */
 export function BookingSection() {
   const { values } = useContent();
   const { business, services, reloadBusiness, reloadServices } = useSiteData();
-  const { intent } = useBookingIntent();
-  const sectionRef = useRef<HTMLElement>(null);
-  const flowShown =
-    business.status === 'ready' &&
-    business.data.policies.onlineBookingEnabled &&
-    services.status === 'ready' &&
-    services.data.length > 0;
-
-  // “Book a chair” anywhere on the page: the flow brings itself into view; while
-  // it is not shown (loading, paused, nothing to book, a problem), show this
-  // section and its message instead of doing nothing.
-  const handledNonce = useRef(intent?.nonce ?? 0);
-  useEffect(() => {
-    if (!intent || intent.nonce === handledNonce.current) return;
-    handledNonce.current = intent.nonce;
-    if (flowShown) return;
-    const heading = sectionRef.current?.querySelector<HTMLElement>('#book-title');
-    if (heading && !heading.hasAttribute('tabindex')) heading.tabIndex = -1;
-    revealAndFocus(heading ?? sectionRef.current);
-  }, [intent, flowShown]);
+  const { startBooking } = useBookingIntent();
 
   let body;
   if (business.status === 'loading' || services.status === 'loading') {
-    body = <FlowSkeleton />;
+    body = (
+      <div className="book__skeleton" aria-hidden="true">
+        <span className="skeleton skeleton--board" />
+        <span className="skeleton skeleton--board" />
+        <span className="skeleton skeleton--board" />
+      </div>
+    );
   } else if (business.status === 'error') {
     body = <LoadProblem error={business.error} onRetry={reloadBusiness} />;
   } else if (!business.data.policies.onlineBookingEnabled) {
@@ -58,26 +48,55 @@ export function BookingSection() {
     );
   } else {
     body = (
-      <BookingFlow
-        business={business.data}
-        services={services.data}
-        onServicesStale={reloadServices}
-        onBusinessStale={reloadBusiness}
-      />
+      <div className="book__how">
+        <ol className="book__steps">
+          <li>
+            <span className="book__no" aria-hidden="true">
+              1
+            </span>
+            <span className="book__step">Pick a service</span>
+            <span className="book__text">From the list, or straight from any Book button.</span>
+          </li>
+          <li>
+            <span className="book__no" aria-hidden="true">
+              2
+            </span>
+            <span className="book__step">Pick a day and time</span>
+            <span className="book__text">Two weeks at a glance, times grouped by part of the day.</span>
+          </li>
+          <li>
+            <span className="book__no" aria-hidden="true">
+              3
+            </span>
+            <span className="book__step">Confirm with a code</span>
+            <span className="book__text">
+              {__BOOKING_DEMO__
+                ? 'In this demo no email is sent: any 6 digits confirm it.'
+                : 'We email you a 6-digit code to confirm it’s you.'}
+            </span>
+          </li>
+        </ol>
+        <button type="button" className="btn btn--primary btn--large" onClick={() => startBooking()}>
+          <span>{values['hero.cta']}</span>
+          <Arrow />
+        </button>
+      </div>
     );
   }
 
   return (
-    <section className="book" id="book" aria-labelledby="book-title" ref={sectionRef}>
-      <div className="wrap">
-        <SectionHead number="03" label="Book online" title={values['book.title']} titleId="book-title" lede={values['book.lede']} />
-        {body}
+    <section className="book" id="book" aria-labelledby="book-title">
+      <div className="wrap book__grid">
+        <SectionHead title={values['book.title']} titleId="book-title" lede={values['book.lede']} />
+        <div className="book__body" data-booking-body="">
+          {body}
+        </div>
       </div>
     </section>
   );
 }
 
-function LoadProblem({ error, onRetry }: { error: EngineError; onRetry: () => void }) {
+export function LoadProblem({ error, onRetry }: { error: EngineError; onRetry: () => void }) {
   if (error.code === 'NOT_CONFIGURED') {
     return (
       <div className="calm" role="status">
@@ -101,25 +120,6 @@ function LoadProblem({ error, onRetry }: { error: EngineError; onRetry: () => vo
       <button type="button" className="btn btn--secondary" onClick={onRetry}>
         Try again
       </button>
-    </div>
-  );
-}
-
-function FlowSkeleton() {
-  return (
-    <div className="flow-grid" aria-busy="true">
-      <div className="flow">
-        <p className="visually-hidden" role="status">
-          Loading the booking calendar…
-        </p>
-        <div className="flow-skeleton" aria-hidden="true">
-          <span className="skeleton skeleton--line" />
-          <span className="skeleton skeleton--title" />
-          {Array.from({ length: 5 }, (_, i) => (
-            <span key={i} className="skeleton skeleton--choice" />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,10 +1,12 @@
-import { useBookingIntent } from '../lib/booking-intent';
+import { OFFLINE_CTA, useBookingIntent } from '../lib/booking-intent';
 import { useContent } from '../lib/content';
+import { Arrow } from './Arrow';
 import { Wordmark } from './Wordmark';
 
+/** Sticky, translucent; the Book button is there at every width. */
 export function SiteHeader() {
   const { values } = useContent();
-  const { startBooking } = useBookingIntent();
+  const { startBooking, online } = useBookingIntent();
   return (
     <header className="site-header">
       <div className="wrap site-header__inner">
@@ -27,9 +29,6 @@ export function SiteHeader() {
             </li>
           </ul>
         </nav>
-        <a className="site-header__hours" href="#visit">
-          Hours
-        </a>
         <a
           className="btn btn--primary btn--small site-header__cta"
           href="#book"
@@ -38,7 +37,8 @@ export function SiteHeader() {
             startBooking();
           }}
         >
-          {values['hero.cta']}
+          <span>{online ? 'Book' : OFFLINE_CTA}</span>
+          <Arrow />
         </a>
       </div>
     </header>

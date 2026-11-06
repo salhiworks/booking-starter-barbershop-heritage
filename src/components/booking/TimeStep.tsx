@@ -8,9 +8,7 @@ import {
   monthOf,
   nextAvailableDay,
   partOfDay,
-  startOfWeek,
   timeZoneLabel,
-  weekDates,
   type AvailabilityDay,
   type Business,
   type PartOfDay,
@@ -25,6 +23,26 @@ import { problemText } from './messages';
 import type { ChosenSlot } from './types';
 
 const PART_NAMES: Record<PartOfDay, string> = { morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening' };
+
+/** The strip shows two weeks, starting today: no past days, no calendar-week cut-off. */
+const STRIP_DAYS = 14;
+/** Up to this many times on a day, every part of the day is listed at once; above it, tabs. */
+const STACK_LIMIT = 18;
+
+/** Whole days from `from` to `to` (both YYYY-MM-DD calendar dates, no time zone involved). */
+function daysBetween(from: string, to: string): number {
+  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
+}
+
+/** Two loads of server days (one per month grid) read as one; the calendar only reshapes them. */
+function mergeDays(a: Load<AvailabilityDay[]>, b: Load<AvailabilityDay[]>): Load<AvailabilityDay[]> {
+  if (a.status === 'error') return a;
+  if (b.status === 'error') return b;
+  if (a.status !== 'ready' || b.status !== 'ready') return a.status !== 'ready' ? a : b;
+  if (a.data === b.data) return a;
+  const known = new Set(a.data.map((d) => d.date));
+  return { status: 'ready', data: [...a.data, ...b.data.filter((d) => !known.has(d.date))] };
+}
 
 interface TimeStepProps {
   business: Business;
@@ -48,22 +66,25 @@ export function TimeStep(props: TimeStepProps) {
   const [monthOpen, setMonthOpen] = useState(false);
   const [viewMonth, setViewMonth] = useState(() => monthOf(viewDate));
 
-  const weekStart = startOfWeek(viewDate, firstDay);
-  const stripMonth = monthOf(weekStart);
-  const dataMonth = monthOpen ? viewMonth : stripMonth;
-  const days = useMonthDays(service.id, dataMonth, firstDay, version);
+  // The two-week window holding the day in view (a day picked in the month view moves it).
+  const offset = Math.max(0, daysBetween(today, viewDate));
+  const stripStart = addDays(today, Math.floor(offset / STRIP_DAYS) * STRIP_DAYS);
+  const stripDates = Array.from({ length: STRIP_DAYS }, (_, i) => addDays(stripStart, i));
+  const stripEnd = stripDates[STRIP_DAYS - 1];
+  const first = useMonthDays(service.id, monthOpen ? viewMonth : monthOf(stripStart), firstDay, version);
+  const second = useMonthDays(service.id, monthOf(stripEnd), firstDay, version);
+  const days = monthOpen ? first : mergeDays(first, second);
   const soonest = useSoonest(service.id, today, lastDay, firstDay, version);
   const loadedDays = days.status === 'ready' ? days.data : null;
 
-  // After moving to another week, land on its first open day once its times are in.
+  // After moving to the next or previous two weeks, land on their first open day once its times are in.
   const autoPick = useRef(false);
   useEffect(() => {
     if (!autoPick.current || !loadedDays) return;
     autoPick.current = false;
-    const week = weekDates(viewDate, firstDay);
-    const open = loadedDays.find((d) => week.includes(d.date) && d.status === 'available' && d.date >= today);
+    const open = loadedDays.find((d) => stripDates.includes(d.date) && d.status === 'available' && d.date >= today);
     if (open && open.date !== viewDate) onDay(open.date);
-  }, [loadedDays, viewDate, firstDay, today, onDay]);
+  });
 
   // Keyboard focus follows the calendar: into the month when it opens, back to the
   // week (the chosen day, or the Month button) when it closes.
@@ -86,10 +107,10 @@ export function TimeStep(props: TimeStepProps) {
     }
   });
 
-  const canPrevWeek = weekStart > startOfWeek(today, firstDay);
-  const canNextWeek = addDays(weekStart, 7) <= lastDay;
+  const canPrevWeek = stripStart > today;
+  const canNextWeek = addDays(stripStart, STRIP_DAYS) <= lastDay;
   const goWeek = (delta: number) => {
-    const target = addDays(weekStart, delta * 7);
+    const target = addDays(stripStart, delta * STRIP_DAYS);
     autoPick.current = true;
     onDay(target < today ? today : target);
   };
@@ -159,7 +180,7 @@ export function TimeStep(props: TimeStepProps) {
         </div>
       ) : (
         <WeekStrip
-          dates={weekDates(viewDate, firstDay)}
+          dates={stripDates}
           today={today}
           lastDay={lastDay}
           locale={locale}
@@ -247,7 +268,7 @@ function DayPanel({ business, today, lastDay, viewDate, part, slot, days, onPart
     </button>
   ) : canNextWeek ? (
     <button type="button" className="btn btn--secondary" onClick={onNextWeek}>
-      See next week
+      See the next two weeks
     </button>
   ) : (
     <p>No online times left in the booking window — call the shop and we’ll help.</p>
@@ -287,11 +308,58 @@ function DayPanel({ business, today, lastDay, viewDate, part, slot, days, onPart
   }
 
   const groups = groupSlotsByPartOfDay(day.slots);
+  const few = isFewLeft(day);
+  const slotButton = (s: (typeof day.slots)[number]) => {
+    const chosen = slot?.startsAt === s.startsAt;
+    return (
+      <li key={s.startsAt}>
+        <button
+          type="button"
+          className={`slot${chosen ? ' is-chosen' : ''}`}
+          aria-pressed={chosen}
+          onClick={() => onSlot({ date: day.date, ...s })}
+        >
+          {formatTime(s.startsAt, timezone, locale)}
+        </button>
+      </li>
+    );
+  };
+  const fewLine = few ? (
+    <p className="few-left">
+      Only {day.slots.length} {day.slots.length === 1 ? 'time' : 'times'} left this day
+    </p>
+  ) : null;
+
+  // A normal day: every part of the day at once, each with its count.
+  if (day.slots.length <= STACK_LIMIT) {
+    return (
+      <div className="daypanel">
+        {title}
+        {fewLine}
+        <div className="partlist">
+          {groups
+            .filter((group) => group.slots.length > 0)
+            .map((group) => (
+              <section className="part" key={group.part} aria-label={`${PART_NAMES[group.part]} times`}>
+                <h5 className="part__name">
+                  {PART_NAMES[group.part]}
+                  <span className="part__count">
+                    {group.slots.length} {group.slots.length === 1 ? 'time' : 'times'}
+                  </span>
+                </h5>
+                <ul className="slots">{group.slots.map(slotButton)}</ul>
+              </section>
+            ))}
+        </div>
+      </div>
+    );
+  }
+
+  // A very open day: one part of the day at a time.
   const slotHere = slot && slot.date === viewDate ? slot : null;
   const preferred = part ?? (slotHere ? partOfDay(slotHere.time) : null);
   const active =
     groups.find((g) => g.part === preferred && g.slots.length > 0) ?? groups.find((g) => g.slots.length > 0) ?? groups[0];
-  const few = isFewLeft(day);
 
   return (
     <div className="daypanel">
@@ -314,27 +382,9 @@ function DayPanel({ business, today, lastDay, viewDate, part, slot, days, onPart
           </button>
         ))}
       </div>
-      {few ? (
-        <p className="few-left">
-          Only {day.slots.length} {day.slots.length === 1 ? 'time' : 'times'} left this day
-        </p>
-      ) : null}
+      {fewLine}
       <ul className="slots" aria-label={`${PART_NAMES[active.part]} times`}>
-        {active.slots.map((s) => {
-          const chosen = slot?.startsAt === s.startsAt;
-          return (
-            <li key={s.startsAt}>
-              <button
-                type="button"
-                className={`slot${chosen ? ' is-chosen' : ''}`}
-                aria-pressed={chosen}
-                onClick={() => onSlot({ date: day.date, ...s })}
-              >
-                {formatTime(s.startsAt, timezone, locale)}
-              </button>
-            </li>
-          );
-        })}
+        {active.slots.map(slotButton)}
       </ul>
     </div>
   );

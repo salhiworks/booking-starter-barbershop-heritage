@@ -1,164 +1,189 @@
-# Northline Barbers — visual system
+# Northline Barbers — visual system ("Cut List")
 
 ## Concept
 
-**The board on the wall:** the site reads like a well-kept neighbourhood shop —
-a numbered price board in bottle green and brass, ruled like a ledger on warm
-paper, with warm tungsten photographs of the work doing the talking.
+**The price list is the design.** The page reads like a well-run modern shop:
+a poster headline beside a photograph of the shop at work, then the services
+and prices set large, every row a way into booking. The palette comes from the
+barbershop counter itself — porcelain tile, chrome, ink, and the deep blue of
+the disinfectant jar — not from nostalgia. No gold, no poles, no "est." dates,
+no gentlemen's-club clichés.
 
-Heritage modern, never costume: no poles, no mustaches, no "est." dates, no
-leather-and-whisky clichés. The heritage comes from the *type* (a sturdy
-Clarendon slab), the *rules* (hairlines, double rules, leader dots) and the
-*numbering* (sections and menu items are numbered like a printed price list).
+One focal point per screen. The poster face is spent in three places only —
+the hero headline, the service names, the closing line; section titles are a
+calmer semi-condensed sentence case. One type family, one action colour.
 
 ## Type
 
 | Role | Face | Why |
 |---|---|---|
-| Display (default) | **Besley** (variable 400–900, italic) — `@fontsource-variable/besley` | A Clarendon revival: bracketed slab serifs, ball terminals, the lettering of shop fascias and price boards. Set heavy (750–800) with tight tracking for headlines, 600 for menu items. |
-| Text / UI | **Schibsted Grotesk** (variable 400–900) — `@fontsource-variable/schibsted-grotesk` | A crisp, slightly condensed news grotesk: very readable at 15–17 px on phones, sturdy numerals for prices and times. |
-| Display (owner option "High-contrast serif") | **DM Serif Display** (400, italic) — `@fontsource/dm-serif-display` | For an owner who wants a finer, more editorial heading style. |
-| Display (owner option "Modern grotesk") | Schibsted Grotesk 800 | No extra font. |
+| Display, names, text and UI | **Archivo** (variable: width 62–125 %, weight 100–900) — `@fontsource-variable/archivo/wdth.css` | One family carries the whole page through its *width* axis: 62 % uppercase for the poster lines (hero headline, closing line), 75 % uppercase for service names, 87 % sentence case for section titles, barber names and the address, 100 % for reading text. |
+| Facts: times, prices, durations, labels | **IBM Plex Mono** 400/500/600 — `@fontsource/ibm-plex-mono` | Tabular figures: prices and times line up and scan quickly. Used small, uppercase, tracked 0.08 em for labels. |
+| Heading option "High-contrast serif" | **DM Serif Display** 400 — `@fontsource/dm-serif-display` | For an owner who wants a finer, editorial heading. Downloaded only when chosen. |
 
-All faces are self-hosted (fontsource, latin subset, `font-display: swap`);
-the browser downloads only the faces the page uses. The heading style is an
-owner choice (`brand.headings`) mapped to `html[data-headings]`.
+All faces are self-hosted (fontsource, `font-display: swap`); the browser
+downloads only the subsets the page uses. The owner's heading style
+(`brand.headings`) maps to `html[data-headings]`:
 
-Small caps labels ("signage lettering"): Schibsted Grotesk 600, uppercase,
-`letter-spacing: 0.14em`, 12–13 px — always with a rule or a numeral next to it.
+| Stored value | Label in the dashboard | Look |
+|---|---|---|
+| `slab` (default) | Condensed poster | Archivo 62 % width, 860 weight, uppercase |
+| `grotesk` | Plain grotesk | Archivo 100 % width, 800 weight, sentence case |
+| `serif` | High-contrast serif | DM Serif Display, sentence case |
+
+The stored values are those of the first design (Heritage), so an owner's
+saved choice stays valid; only the look behind each value changed.
 
 ## Colour
 
-Warm paper ground, ink text, bottle green as the board and the brand, oxblood
-for the one action that matters (Book), brass for metal details.
-
 | Token | Value | Use |
 |---|---|---|
-| `--paper` | `#F3EDE1` | page ground |
-| `--paper-deep` | `#E8DFCC` | bands, selected/hover surfaces |
-| `--card` | `#FBF8F2` | inputs, slips, cards |
-| `--ink` | `#1B1D19` | body text, rules that carry meaning |
-| `--ink-muted` | `#55524A` | secondary text |
-| `--rule` | `#CDBFA6` | hairlines (decorative only) |
-| `--field-border` | `#857760` | input, slot and button outlines — 4.1:1 on card, 3.8:1 on paper (non-text UI needs 3:1) |
-| `--green` (owner: `brand.board`) | `#163B2C` | the menu board, footer, headings on paper, selected days/times |
-| `--green-deep` | derived: green mixed with 30 % ink | board shadows, footer base |
-| `--board-text` / `--board-muted` | `#F3EDE1` / `#C9D2C6` | text on green |
-| `--oxblood` (owner: `brand.accent`) | `#6B1E23` | primary buttons (Book a chair, Continue), focus ring on paper |
-| `--brass` | `#A8823F` | rules, ornaments, numerals' underline — **never text on paper** |
-| `--brass-text` | `#7D5C22` | brass-coloured text on paper/card |
-| `--brass-light` | `#D2B274` | numerals, prices and focus ring on green |
-| `--error` / `--success` | `#9E2A22` / `#1F5A3E` | inline validation, status |
+| `--tile` | `#ECEEEC` | page ground (porcelain tile) |
+| `--tile-deep` | `#DFE3E2` | bands (Kind words), chosen cards, icon buttons |
+| `--white` | `#FAFBFA` | the menu band, cards, the booking sheet |
+| `--ink` | `#121417` | text, the rules that carry meaning |
+| `--steel` | `#545C63` | secondary text |
+| `--rule` | `#C3CACC` | hairlines (decorative only) |
+| `--field-border` | `#7D868D` | inputs, day and time buttons — non-text UI ≥ 3:1 |
+| `--brand-dark` (owner: `brand.board`, "Dark colour") | `#121417` | the shop band, the footer, headings |
+| `--action` (owner: `brand.accent`, "Action colour") | `#2A4A8F` | every Book / Continue button, chosen times, the visit-step numbers, focus ring |
+| `--error` / `--success` | `#A3261D` / `#17683F` | validation, status |
 
-Checked text/background pairs (WCAG ratio, all ≥ 4.5:1):
+Checked text/background pairs (WCAG 2.x ratio, computed by script):
 
 | Text on background | Ratio |
 |---|---|
-| ink on paper / paper-deep / card | 14.6 / 12.8 / 16.0 |
-| ink-muted on paper / paper-deep / card | 6.7 / 5.9 / 7.4 |
-| green on paper / paper-deep / card | 10.6 / 9.4 / 11.7 |
-| paper on green · board-muted on green · brass-light on green | 10.6 · 8.0 · 6.1 |
-| paper on oxblood (buttons) · oxblood on paper | 9.8 · 9.8 |
-| brass-text on paper / card / paper-deep | 5.3 / 5.8 / 4.6 |
-| error on paper / card · success on paper / card | 6.4 / 7.1 · 7.0 / 7.7 |
-| paper on ink (preview banner) · brass-light on ink | 14.6 · 8.4 |
+| ink on tile / white / tile-deep | 15.8 / 17.8 / 14.3 |
+| steel on tile / white / tile-deep | 5.8 / 6.6 / 5.3 |
+| white on action (buttons) · action on tile (large numerals) | 8.5 · 7.3 |
+| white (`--on-dark`) on brand-dark | 17.8 |
+| error on tile / white / its wash | 6.3 / 7.1 / 6.1 |
+| success on tile | 5.8 |
+| field-border on white / tile (UI, not text) | 3.6 / 3.2 |
 
-Owner colours are validated by the dashboard (`contrastWith: #F3EDE1`): the
-board green needs 7:1 (it carries muted text too), the accent 4.5:1. If an
-owner's green leaves brass-light below 4.5:1, the site switches board numerals
-to paper (`--board-accent`), so text never drops below AA.
+Owner colours are validated by the dashboard: the dark colour against
+`#ECEEEC` at 7:1 (it carries white and muted text), the action colour against
+white at 4.5:1. The action colour is used for fills, the focus ring and large
+text only — never for small text on tile — so a light owner choice can't drop
+small text below AA. Owners who saved a colour under the first design keep it:
+a saved bottle green becomes the dark colour, a saved oxblood the action colour.
 
-Dashboard accent (`src/admin-theme.css`): bottle green, not oxblood — in a work
-tool next to red status colours an oxblood button reads as "destructive".
-Light `#1E5A40` with white text (8.1:1, 8.1:1 on near-white); Dark `#93CDB4`
-with `#0B1A14` text (≥ 9:1 both ways).
+Dashboard accent (`src/admin-theme.css`): jar blue. Light `#1F55C9` with white
+text (6.6:1 on white — a touch brighter than the site's `#2A4A8F` so it holds
+up beside the dashboard's coloured status chips); Dark `#9DB8F2` with
+`#0B1530` text (8.9:1 on `#18181b`, 9.1:1 text).
 
 ## Space and type scale
 
 4 px base. Spacing tokens `--space-1 … --space-10`:
 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 · 96 · 128 px. Sections breathe with
-`--section-pad: clamp(64px, 9vw, 128px)`.
-
-Type scale (fluid with `clamp`, phone → wide):
+`--section-pad: clamp(64px, 9vw, 128px)`; the page is at most 1360 px wide.
 
 | Token | Size | Use |
 |---|---|---|
-| `--text-xs` | 12.5 px | small caps labels, footnotes |
-| `--text-sm-tight` | 14 px | the Morning / Afternoon / Evening control on phones |
-| `--text-sm` | 15 px | secondary lines, captions |
+| `--text-xs` | 12 px | mono labels, durations |
+| `--text-sm` | 15 px | secondary lines |
 | `--text-base` | 17 px | body |
-| `--text-lg` | 18 → 21 px | ledes |
-| `--text-xl` | 21 → 27 px | menu item names, step titles |
-| `--text-2xl` | 34 → 54 px | section titles |
-| `--text-3xl` | 44 → 104 px | the hero headline |
-| `--text-numeral` | 56 → 128 px | big section numerals |
+| `--text-lg` | 17 → 20 px | ledes |
+| `--text-xl` | 22 → 32 px | service and barber names |
+| `--text-price` | 20 → 26 px | prices (mono) |
+| `--text-name` | 24 → 32 px | barber names |
+| `--text-2xl` | 36 → 64 px | section titles (sentence case) |
+| `--text-3xl` / `--text-3xl-wide` | 48 → 88 px / 80 → 128 px (98 at 1280) | the hero headline (phones and tablets / beside the photo) |
+| `--text-cta` | 44 → 96 px | the closing line |
 
-Line heights: display 0.95–1.05, body 1.55. Measure: 34–62 characters.
+Line heights: display 0.88–0.92, body 1.55. Measure: 34–62 characters.
 
 ## Shape, rules and depth
 
-- **Radius:** almost none — print, not app. `--radius-sm: 2px` on buttons and
-  inputs, `--radius-pill` only for the small status chip.
-- **Rules:** `--rule-hair` 1 px `--rule` for structure; `--rule-ink` 1 px ink
-  for rules that carry meaning (menu rows); double brass rules (3 px double)
-  frame the hero ticket and the window sign; dotted brass leaders connect menu
-  names to prices.
-- **Elevation:** flat. One shadow, `--shadow-raise`, for things that float over
-  content: the phone booking bar and the open month calendar.
+- **Radius:** pill buttons; 4 px on photos; 8 px on cards, inputs, days and
+  times; 16 px on the top of the phone booking sheet.
+- **Rules:** a 2 px ink rule opens every list that carries meaning (the cut
+  list, the hours, the booking steps, the reviews); 1 px hairlines between rows.
+- **Elevation:** flat. Only things that float get a shadow: the booking sheet
+  and its summary bar.
 - **Photos:** always in fixed-ratio frames (`aspect-ratio` + `object-fit:
-  cover`) with a 1 px ink keyline; hero 4:5, the shop 3:2, details and sample
-  cards 4:5. Captions in small caps under a hairline.
+  cover`): hero 5:4 beside the words from 720 px, with its own 4:5 crop
+  edge to edge on phones (`<picture media>`, `narrow` in `photo-variants.ts`);
+  the shop 16:9 (4:3 on phones); details, barber portraits and the shopfront 4:5.
 
 ## Composition
 
-Mobile first; layouts open up at 720 px and 1080 px (max width 1320 px). Small
-phones get three refinements (420 / 380 / 340 px) so every calendar day stays a
-44 px target: the month grid goes edge to edge below 420 px, the week strip
-tightens below 380 px and goes edge to edge below 340 px.
+Mobile first; layouts open up at 720 px and 1000 px (a 1024 px laptop gets the
+two-column layout). Narrow phones get refinements below 460 px and 380 px.
 
-1. **Hero** — phone: photo band, then headline, lede and a ruled "next open
-   chair" ticket with the one Book action. Wide (≥ 1080 px): 7/5 split, the
-   two-line headline left, the photo a tall panel (`--hero-h`) running off the
-   right edge of the screen.
-2. **The menu** — full-bleed green board inside a double rule: numbered rows,
-   leader dots, prices in brass; two newspaper-style columns on wide screens.
-   When the owner adds service photos they appear under the board as plates
-   captioned with the board's numbers ("No. 02 Skin Fade") — a swipe row on
-   phones, modest 4:5 plates on wide screens. With none, the board stands alone
-   and is complete; with some, only those services get a plate.
-3. **Book a chair** — paper; the flow on the left, an appointment slip on the
-   right (wide) or a sticky bar (phone).
-4. **The barbers** — three sample cards: a tool photo (labelled "Sample
-   photo"), name, speciality, short bio. Never a face.
-5. **The shop** — asymmetric: wide photo of the chairs, a portrait detail
-   overlapping it, and the numbered routine of a visit.
-6. **Kind words** — typographic quotes on a deeper paper band, labelled as
-   placeholder examples.
-7. **Hours & directions** — the window sign (or the owner's shopfront photo),
-   the hours board from the engine with today marked, address and directions.
-8. **Footer** — green, the wordmark, contact, a discreet Staff login.
+1. **Header** — sticky and translucent: the shop name as a condensed wordmark,
+   section links from 1000 px, and **Book at every width**.
+2. **Hero** — kicker, the poster headline, the lede, "Book an appointment"
+   with the next open chair (from the engine) beside it, and a link to all the
+   services and prices. Wide: 6/6 split, the photo a near-square 5:4 frame
+   centred on the words, all of it above the fold at 1280 × 800. Phones: the
+   words first, then the photo's taller crop edge to edge.
+3. **The menu** — every service on white: name, duration, description, price
+   and an arrow chip; two columns on wide screens. Rows invert to ink on hover.
+   Owner service photos follow as plates captioned with the service name.
+4. **Book a chair (#book)** — how booking works in three steps and the button
+   that opens the booking sheet; while online booking is off, the shop's
+   contact details instead. Every Book button lands here in that case.
+5. **The barbers** — a roster: name, speciality, bio, labelled as sample
+   profiles until the owner saves the team. A portrait appears only when the
+   owner adds one — never a stand-in photo.
+6. **The shop** — the dark band: the wide room photo, notes and a detail photo.
+7. **A visit, start to finish** — the owner's visit steps on the light ground,
+   numbered because they are a real sequence.
+8. **Kind words** — only once the owner has saved real quotes; never examples
+   on the public site.
+9. **Hours & directions** — the address, open-now line, directions and
+   contact links; the hours table from the engine with today marked; the
+   owner's shopfront photo when set. In the Live Demo and preview mode a tag
+   says the details are a fictional shop's.
+10. **Footer** — the closing line (the hero headline again, as a sign-off)
+   with the Book button on the deeper tile band, then the shop's details on
+   the dark colour and a discreet Staff login.
 
-One focal point per screen; whitespace is the luxury.
+While online booking is off (or can't load), every general Book button says
+"How to book" and leads to the `#book` section's contact details.
+
+## The booking sheet
+
+A native modal `<dialog>` at `#book` (`src/components/booking/BookingSheet.tsx`,
+helper `src/lib/dialog.ts` — the same pattern as the Atelier starter):
+full height on phones (94 dvh, rounded top), a 560 px panel on the right from
+900 px. Every Book action opens it; ✕, Esc, Back or a click beside the panel
+close it, and focus returns to the button that opened it. The flow stays
+mounted while closed, so a chosen time — or a held one at the code step — is
+still there when it opens again.
+
+Inside: a four-segment progress bar, the step title, a "chosen" card with
+Change, the step, and a summary bar pinned to the bottom (service · price,
+day · time, Continue). Days: a 14-day strip starting today (counts of open
+times from the engine's month data; closed and full days dashed), Month for
+anything later. Times: morning / afternoon / evening listed together with
+counts, or as tabs on a day with more than 18 times.
 
 ## Motion
 
-Few, physical, purposeful. Tokens: `--dur-fast 160ms`, `--dur-base 260ms`,
-`--dur-slow 520ms`; `--ease-out cubic-bezier(.2,.8,.2,1)` (decelerate, like a
-chair settling), `--ease-in-out cubic-bezier(.65,0,.35,1)`.
+Few and purposeful. Tokens: `--dur-fast 160ms`, `--dur-base 240ms`,
+`--dur-slow 560ms`; `--ease-out cubic-bezier(.2,.8,.2,1)`.
 
-- Hero entrance: headline, lede and ticket rise 14 px and fade in, staggered
-  80 ms (520 ms). Content is never hidden waiting for JavaScript.
-- Booking flow: each step slides in 10 px and fades (260 ms); a chosen time
-  fills in 160 ms; the appointment slip briefly warms (brass flash, 400 ms)
-  when its contents change.
-- Nothing scroll-jacks, nothing delays reading or booking.
+- Hero entrance: kicker, headline, lede and action rise 14 px and fade in,
+  staggered 70 ms. Content is never hidden waiting for JavaScript.
+- Cut list rows: the signature hover — the row inverts to ink, slides its
+  content in 16 px and fills the arrow chip with the action colour.
+- The booking sheet slides up (phones) or in from the right (wide); each step
+  slides in 12 px.
+- Nothing scroll-jacks, nothing animates on scroll, nothing delays booking.
 - `prefers-reduced-motion: reduce` turns every animation and transition off
   and disables smooth scrolling.
 
 ## Photography
 
-Tungsten and window light, rich shadows, brass and leather; 35–50 mm close
-crops of hands, tools and lather; warm, slightly film-like colour. Every site
-photo gets the same grade (`scripts/photos.mjs`: a touch warmer, lifted blacks,
-slightly less saturation) so stock from different photographers reads as one
-set. Sources and licences: `PHOTOS.md`.
+Natural colour by default: the owner's photos appear exactly as uploaded.
+The owner can choose black and white for every photo (Website → Brand →
+Photos, `brand.photos` → `html[data-photos='mono']` →
+`--photo-filter-mono: grayscale(1) contrast(1.1) brightness(1.02)` on
+`.frame img`), so photos from different sources read as one set.
+
+Direction: the shop at work with enough of the room around it — light,
+people mid-task, no extreme close-ups of ears, clippers or the back of a head,
+no poles, no other businesses' logos. Sources and licences: `PHOTOS.md`.
